@@ -1,27 +1,43 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Users, MessageSquare, Zap } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Heart, Search } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Home = () => {
+  const { user } = useAuth();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-900">
-                Full Stack Template
+                Beauty Shop
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/login">
-                <Button variant="ghost">Login</Button>
-              </Link>
-              <Link to="/register">
-                <Button>Get Started</Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/products">
+                    <Button variant="ghost">Browse Products</Button>
+                  </Link>
+                  <Link to="/cart">
+                    <Button>Cart</Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="ghost">Login</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button>Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -31,87 +47,88 @@ const Home = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Modern Full Stack Template
+            Discover Your Beauty
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            A complete starter template with React 18, Express.js, Prisma, and JWT authentication.
-            Get your project up and running in minutes, not hours.
+            Premium beauty products curated just for you. From skincare to makeup, 
+            find everything you need to look and feel your best.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link to="/register">
+            <Link to="/products">
               <Button size="lg" className="flex items-center">
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                Shop Now <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Link to="/login">
-              <Button variant="outline" size="lg">
-                Login
-              </Button>
-            </Link>
+            {!user && (
+              <Link to="/register">
+                <Button variant="outline" size="lg">
+                  Create Account
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card>
+        {/* Features Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <Card className="text-center p-6">
             <CardHeader>
-              <Users className="h-12 w-12 text-blue-600 mb-4" />
-              <CardTitle>User Authentication</CardTitle>
+              <div className="mx-auto mb-4 w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                <Search className="h-6 w-6 text-pink-600" />
+              </div>
+              <CardTitle>Easy Discovery</CardTitle>
               <CardDescription>
-                Complete JWT-based authentication with registration, login, and protected routes.
+                Browse products by category or search for specific items to find exactly what you need.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card>
+          <Card className="text-center p-6">
             <CardHeader>
-              <MessageSquare className="h-12 w-12 text-green-600 mb-4" />
-              <CardTitle>CRUD Operations</CardTitle>
+              <div className="mx-auto mb-4 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <ShoppingBag className="h-6 w-6 text-purple-600" />
+              </div>
+              <CardTitle>Seamless Shopping</CardTitle>
               <CardDescription>
-                Full create, read, update, and delete functionality for posts with user ownership.
+                Add products to your cart and checkout securely with our streamlined shopping experience.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card>
+          <Card className="text-center p-6">
             <CardHeader>
-              <Zap className="h-12 w-12 text-purple-600 mb-4" />
-              <CardTitle>Modern Stack</CardTitle>
+              <div className="mx-auto mb-4 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Heart className="h-6 w-6 text-blue-600" />
+              </div>
+              <CardTitle>Quality Products</CardTitle>
               <CardDescription>
-                Built with React 18, Vite, Tailwind CSS, Express.js, Prisma, and SQLite.
+                Carefully curated beauty products from trusted brands to help you look and feel amazing.
               </CardDescription>
             </CardHeader>
           </Card>
         </div>
 
-        {/* Tech Stack */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Tech Stack
+        {/* CTA Section */}
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            Ready to Start Shopping?
           </h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Frontend</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li>• React 18 with TypeScript</li>
-                <li>• Vite for fast development</li>
-                <li>• Tailwind CSS for styling</li>
-                <li>• ShadCN UI components</li>
-                <li>• Lucide React icons</li>
-                <li>• Sonner for toast notifications</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Backend</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li>• Express.js REST API</li>
-                <li>• Prisma ORM</li>
-                <li>• SQLite database</li>
-                <li>• JWT authentication</li>
-                <li>• Cookie-based sessions</li>
-                <li>• CORS enabled</li>
-              </ul>
-            </div>
+          <p className="text-gray-600 mb-6">
+            Join thousands of happy customers who trust us for their beauty needs.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link to="/products">
+              <Button size="lg">
+                Browse Products
+              </Button>
+            </Link>
+            {!user && (
+              <Link to="/register">
+                <Button variant="outline" size="lg">
+                  Sign Up Free
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </main>

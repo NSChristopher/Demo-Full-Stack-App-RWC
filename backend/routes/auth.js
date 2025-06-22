@@ -30,7 +30,7 @@ router.post('/register', async (req, res) => {
     const { email, username, password } = req.body;
 
     // Check if user already exists
-    const existingUser = db.user.findFirst({
+    const existingUser = await db.user.findFirst({
       where: {
         OR: [
           { email },
@@ -47,15 +47,17 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = db.user.create({
-      email,
-      username,
-      password: hashedPassword
+    const user = await db.user.create({
+      data: {
+        email,
+        username,
+        password: hashedPassword
+      }
     });
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
+      { userId: user.id, email: user.email, username: user.username, role: user.role },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -73,7 +75,8 @@ router.post('/register', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        role: user.role
       }
     });
   } catch (error) {
@@ -88,7 +91,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Find user
-    const user = db.user.findUnique({
+    const user = await db.user.findUnique({
       where: { email }
     });
 
@@ -104,7 +107,7 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
+      { userId: user.id, email: user.email, username: user.username, role: user.role },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -122,7 +125,8 @@ router.post('/login', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        role: user.role
       }
     });
   } catch (error) {
@@ -134,7 +138,7 @@ router.post('/login', async (req, res) => {
 // Get current user
 router.get('/me', authenticateToken, async (req, res) => {
   try {
-    const user = db.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: req.user.userId }
     });
 
@@ -147,6 +151,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         id: user.id,
         email: user.email,
         username: user.username,
+        role: user.role,
         createdAt: user.createdAt
       }
     });

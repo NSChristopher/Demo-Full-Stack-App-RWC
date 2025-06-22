@@ -5,11 +5,21 @@ const { authenticateToken } = require('./auth');
 const router = express.Router();
 
 // Middleware to check if user is admin
-const requireAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
+const requireAdmin = async (req, res, next) => {
+  if (!req.user || !req.user.userId) {
+    return res.status(401).json({ error: 'Authentication required' });
   }
-  next();
+  
+  try {
+    const user = await db.user.findUnique({ where: { id: req.user.userId } });
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+    next();
+  } catch (error) {
+    console.error('Admin check error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 // Get all products with optional filtering
@@ -19,14 +29,18 @@ router.get('/', async (req, res) => {
     
     const where = {};
     
-    if (category) {
+    if (category && search) {
       where.category = category;
-    }
-    
-    if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
+        { name: { contains: search } },
+        { description: { contains: search } }
+      ];
+    } else if (category) {
+      where.category = category;
+    } else if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { description: { contains: search } }
       ];
     }
 
@@ -53,12 +67,8 @@ router.get('/', async (req, res) => {
 // Get product categories
 router.get('/categories', async (req, res) => {
   try {
-    const categories = await db.product.findMany({
-      select: { category: true },
-      distinct: ['category']
-    });
-    
-    res.json(categories.map(c => c.category).filter(Boolean));
+    const categories = db.getCategories();
+    res.json(categories);
   } catch (error) {
     console.error('Get categories error:', error);
     res.status(500).json({ error: 'Internal server error' });
